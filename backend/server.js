@@ -1,5 +1,6 @@
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
+const cors = require("cors");
 
 const db = new sqlite3.Database("./notes.db", (err)=>{
     if(err){
@@ -25,6 +26,8 @@ db.run(`
     });
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -59,6 +62,26 @@ app.get("/notes", (req, res) =>{
         }
 
         res.json(rows);
+    });
+});
+
+//Delete single note by id
+app.delete("/notes/:id", (req, res) =>{
+    const { id } = req.params;
+
+    const query = "DELETE FROM notes WHERE id = ?";
+    
+    db.run(query, [id], function(err){
+        if(err){
+            return res.status(500).json({error: err.message});
+        }
+        if(this.changes === 0){
+            return res.status(404).json({message: "Note not found"});
+        }
+        res.json({
+            message: "Note deleted Successfully",
+            deletedId: parseInt(id)
+        });
     });
 });
 
