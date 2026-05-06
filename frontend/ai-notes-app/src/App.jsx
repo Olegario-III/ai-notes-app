@@ -1,72 +1,84 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
+import "./App.css";
 
 function App() {
 
-const [notes, setNotes] = useState([]);
-const [content, setContent] = useState("");
-const [category, setCategory] = useState("");
+  const [notes, setNotes] = useState([]);
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("");
 
-useEffect(()=>{
-  fetchNotes();
-}, []);
+  useEffect(() => {
+    fetchNotes();
+  }, []);
 
-const fetchNotes = async()=>{
-  const res = await fetch(`http://localhost:3000/notes`);
-  const data = await res.json();
-  setNotes(data);
-};
+  const fetchNotes = async () => {
+    const res = await fetch(`http://localhost:3000/notes`);
+    const data = await res.json();
+    setNotes(data);
+  };
 
-const addNote = async ()=>{
-  await fetch(`http://localhost:3000/notes`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json"
-    },
-    body: JSON.stringify({ content, category})
-  });
+  const addNote = async () => {
+    await fetch(`http://localhost:3000/notes`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({ content, category })
+    });
 
-  setContent("");
-  setCategory("");
+    setContent("");
+    setCategory("");
 
-  fetchNotes();
-};
+    fetchNotes();
+  };
 
-const deleteNote = async (id)=>{
-  await fetch(`http://localhost:3000/notes/${id}`, {
-    method: "DELETE"
-  });
+  const deleteNote = async (id) => {
+    await fetch(`http://localhost:3000/notes/${id}`, {
+      method: "DELETE"
+    });
 
-  fetchNotes();
-};
+    fetchNotes();
+  };
 
   return (
-    <div style={{padding: "20px"}}>
-    <h1>AI Note App</h1>
-    <input
-    type="text"
-    placeholder="Note Content"
-    value={content}
-    onChange={(e)=> setContent(e.target.value)}
-    />
+    <div className="app">
+      <h1>AI Notes App</h1>
 
-    <input
-    type="text"
-    placeholder="Category"
-    value={category}
-    onChange={(e)=> setCategory(e.target.value)}
-    />
+      <div className="form">
+        <input
+          type="text"
+          placeholder="Note Content"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+        />
 
-    <button onClick={addNote}>Add Note</button>
+        <input
+          type="text"
+          placeholder="Category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        />
+        <button onClick={addNote}>Add Note</button>
+      </div>
 
-    <ul>
-      {notes.map((note)=>(
-        <li key={note.id}>
-          <strong>{note.content}</strong> ({note.category})
-          <button onClick={()=> deleteNote(note.id)}>Delete</button>
-        </li>
-      ))}
-    </ul>
-  </div>
+      <div className="notes">
+        {notes.map((note) => (
+          <div className="note" key={note.id}>
+            <div>
+              <div className="note-content">{note.content}</div>
+              <div className="note-category">{note.category}</div>
+            </div>
+
+            <button
+              className="delete-btn"
+              onClick={() => deleteNote(note.id)}
+            >
+              Delete
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
