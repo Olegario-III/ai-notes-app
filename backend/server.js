@@ -56,9 +56,20 @@ app.post("/notes", (req, res) =>{
 });
 
 app.get("/notes", (req, res) =>{
-    db.all("SELECT * FROM notes", [],(err, rows) => {
+    const { category } = req.query;
+
+    let query = "SELECT * FROM notes";
+    let params = [];
+
+    if (category){
+        query += " WHERE LOWER(category) = LOWER(?) ";
+        params.push(category.trim());
+    }
+    db.all(query, params, (err, rows) =>{
         if(err){
-            return res.status(500).json({error: err.message});
+            return res.status(500).json({
+                error: err.message
+            });
         }
 
         res.json(rows);

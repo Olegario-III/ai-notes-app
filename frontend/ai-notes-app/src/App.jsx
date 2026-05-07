@@ -6,13 +6,20 @@ function App() {
   const [notes, setNotes] = useState([]);
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
+  const [filterCategory, setFilterCategory]= useState("");
 
   useEffect(() => {
-    fetchNotes();
+    fetchNotes(); 
   }, []);
 
-  const fetchNotes = async () => {
-    const res = await fetch(`http://localhost:3000/notes`);
+  const fetchNotes = async (category = "") => {
+    let url = `http://localhost:3000/notes`;
+
+    if(category){
+      url += `?category=${category}`;
+    }
+
+    const res = await fetch(url);
     const data = await res.json();
     setNotes(data);
   };
@@ -59,6 +66,18 @@ function App() {
           onChange={(e) => setCategory(e.target.value)}
         />
         <button onClick={addNote}>Add Note</button>
+        <input
+          type="text"
+          placeholder="filter by category"
+          value={filterCategory}
+          onChange={(e)=> setFilterCategory(e.target.value)}
+          />
+          <button onClick={()=> fetchNotes(filterCategory)}>
+            Filter
+          </button>
+          <button onClick={()=> fetchNotes("")}>
+            Show All
+          </button>
       </div>
 
       <div className="notes">
