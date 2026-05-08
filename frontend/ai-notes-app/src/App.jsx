@@ -6,17 +6,30 @@ function App() {
   const [notes, setNotes] = useState([]);
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
-  const [filterCategory, setFilterCategory]= useState("");
+  const [filterCategory, setFilterCategory] = useState("");
+  const [timeFilter, setTimeFilter] = useState("");
 
   useEffect(() => {
-    fetchNotes(); 
+    fetchNotes();
   }, []);
 
-  const fetchNotes = async (category = "") => {
+  const fetchNotes = async (
+    category = filterCategory,
+    time = timeFilter
+  ) => {
     let url = `http://localhost:3000/notes`;
+    let queryParams = [];
 
-    if(category){
-      url += `?category=${category}`;
+    if (category) {
+      queryParams.push(`category=${category}`);
+    }
+
+    if (time) {
+      queryParams.push(`time=${time}`);
+    }
+
+    if (queryParams.length > 0) {
+      url += `?${queryParams.join("&")}`;
     }
 
     const res = await fetch(url);
@@ -51,7 +64,7 @@ function App() {
     <div className="app">
       <h1>AI Notes App</h1>
 
-      <div className="form">
+      <div className="filters">
         <input
           type="text"
           placeholder="Note Content"
@@ -70,14 +83,38 @@ function App() {
           type="text"
           placeholder="filter by category"
           value={filterCategory}
-          onChange={(e)=> setFilterCategory(e.target.value)}
-          />
-          <button onClick={()=> fetchNotes(filterCategory)}>
-            Filter
-          </button>
-          <button onClick={()=> fetchNotes("")}>
-            Show All
-          </button>
+          onChange={(e) => setFilterCategory(e.target.value)}
+        />
+        <button onClick={() => {
+          setTimeFilter("today");
+          fetchNotes(filterCategory, "today");
+        }}>
+          Today
+        </button>
+
+        <button onClick={() => {
+          setTimeFilter("week");
+          fetchNotes(filterCategory, "week");
+        }}>
+          Week
+        </button>
+
+        <button onClick={() => {
+          setTimeFilter("month");
+          fetchNotes(filterCategory, "month");
+        }}>
+          Month
+        </button>
+        <button onClick={() => fetchNotes(filterCategory, timeFilter)}>
+          Filter
+        </button>
+        <button onClick={() => {
+          setTimeFilter("");
+          setFilterCategory("");
+          fetchNotes("", "");
+        }}>
+          Show All
+        </button>
       </div>
 
       <div className="notes">

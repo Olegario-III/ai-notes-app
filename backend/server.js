@@ -56,7 +56,7 @@ app.post("/notes", (req, res) =>{
 });
 
 app.get("/notes", (req, res) =>{
-    const { category } = req.query;
+    const { category, time } = req.query;
 
     let query = "SELECT * FROM notes";
     let params = [];
@@ -65,6 +65,25 @@ app.get("/notes", (req, res) =>{
         query += " WHERE LOWER(category) = LOWER(?) ";
         params.push(category.trim());
     }
+
+    if(time === "today"){
+        query += category
+            ? " AND DATE(created_at) = DATE('now')"
+            : " WHERE DATE(created_at) = DATE('now')";
+    }
+    
+    if(time === "week"){
+        query += category
+            ? " AND created_at >= datetime('now', '-7 days')"
+            : " WHERE created_at >= datetime('now', '-7 days')";
+    }
+
+    if(time === "month"){
+        query += category
+            ? " AND created_at >= datetime('now', '-30 days')"
+            : " WHERE created_at >= datetime('now', '-30 days')";
+    }
+
     db.all(query, params, (err, rows) =>{
         if(err){
             return res.status(500).json({

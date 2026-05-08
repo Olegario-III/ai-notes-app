@@ -128,3 +128,34 @@ h1 {
     width: 100%;
   }
 }
+
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.filters input {
+  flex: 1;
+  min-width: 180px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #1e293b;
+  color: white;
+}
+
+.filters button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: #334155;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.filters button:hover {
+  background: #475569;
+}
