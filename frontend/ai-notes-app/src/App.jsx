@@ -61,13 +61,22 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <h1>AI Notes App</h1>
+  <div className="app">
 
-      <div className="filters">
+    <h1>AI Notes</h1>
+    <p className="subtitle">
+      Smart notes with AI-powered quizzes
+    </p>
+
+    <div className="top-section">
+
+      {/* ADD NOTE */}
+      <div className="card">
+        <h2>Add Note</h2>
+
         <input
           type="text"
-          placeholder="Note Content"
+          placeholder="Write your note..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
@@ -78,51 +87,87 @@ function App() {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         />
-        <button onClick={addNote}>Add Note</button>
-        <input
-          type="text"
-          placeholder="filter by category"
-          value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
-        />
-        <button onClick={() => {
-          setTimeFilter("today");
-          fetchNotes(filterCategory, "today");
-        }}>
-          Today
-        </button>
 
-        <button onClick={() => {
-          setTimeFilter("week");
-          fetchNotes(filterCategory, "week");
-        }}>
-          Week
-        </button>
-
-        <button onClick={() => {
-          setTimeFilter("month");
-          fetchNotes(filterCategory, "month");
-        }}>
-          Month
-        </button>
-        <button onClick={() => fetchNotes(filterCategory, timeFilter)}>
-          Filter
-        </button>
-        <button onClick={() => {
-          setTimeFilter("");
-          setFilterCategory("");
-          fetchNotes("", "");
-        }}>
-          Show All
+        <button
+          className="add-btn"
+          onClick={addNote}
+        >
+          Add Note
         </button>
       </div>
 
-      <div className="notes">
-        {notes.map((note) => (
+      {/* FILTERS */}
+      <div className="card">
+        <h2>Filters</h2>
+
+        <input
+          type="text"
+          placeholder="Filter by category..."
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+        />
+
+        <div className="filter-buttons">
+
+          <button onClick={() => {
+            setTimeFilter("today");
+            fetchNotes(filterCategory, "today");
+          }}>
+            Today
+          </button>
+
+          <button onClick={() => {
+            setTimeFilter("week");
+            fetchNotes(filterCategory, "week");
+          }}>
+            Week
+          </button>
+
+          <button onClick={() => {
+            setTimeFilter("month");
+            fetchNotes(filterCategory, "month");
+          }}>
+            Month
+          </button>
+
+          <button onClick={() => {
+            fetchNotes(filterCategory, timeFilter);
+          }}>
+            Apply
+          </button>
+
+          <button onClick={() => {
+            setTimeFilter("");
+            setFilterCategory("");
+            fetchNotes("", "");
+          }}>
+            All
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+
+    {/* NOTES */}
+    <div className="notes">
+
+      {notes.length === 0 ? (
+        <div className="empty">
+          No notes found.
+        </div>
+      ) : (
+        notes.map((note) => (
           <div className="note" key={note.id}>
+
             <div>
-              <div className="note-content">{note.content}</div>
-              <div className="note-category">{note.category}</div>
+              <div className="note-content">
+                {note.content}
+              </div>
+
+              <div className="note-category">
+                {note.category}
+              </div>
             </div>
 
             <button
@@ -131,11 +176,15 @@ function App() {
             >
               Delete
             </button>
+
           </div>
-        ))}
-      </div>
+        ))
+      )}
+
     </div>
-  );
+
+  </div>
+);
 }
 
 export default App
