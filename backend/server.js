@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const cors = require("cors");
@@ -113,6 +115,65 @@ app.delete("/notes/:id", (req, res) =>{
             deletedId: parseInt(id)
         });
     });
+});
+
+app.post("/quiz", async (req, res) => {
+
+    try {
+
+        const { notes } = req.body;
+
+        const prompt = `
+        Create a short beginner-friendly quiz 
+        based on these notes:
+
+        ${notes}
+
+        Include:
+        - 3 multiple choice questions
+        - answers at the end
+        `;
+
+        const response = await fetch(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + process.env.GEMINI_API_KEY,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    contents: [
+                        {
+                            parts: [
+                                {
+                                    text: prompt
+                                }
+                            ]
+                        }
+                    ]
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        console.log(JSON.stringify(data, null, 2));
+
+        const quiz =
+            data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        res.json({
+            quiz
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Failed to generate quiz"
+        });
+    }
 });
 
 app.listen(3000,() =>{
