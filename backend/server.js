@@ -124,7 +124,7 @@ app.post("/quiz", async (req, res) => {
         const { notes } = req.body;
 
         const prompt = `
-        Create a short beginner-friendly quiz 
+        Create a beginner-friendly quiz 
         based on these notes:
 
         ${notes}
@@ -135,20 +135,24 @@ app.post("/quiz", async (req, res) => {
         `;
 
         const response = await fetch(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + process.env.GEMINI_API_KEY,
+            "https://openrouter.ai/api/v1/chat/completions",
             {
                 method: "POST",
+
                 headers: {
+                    "Authorization":
+                        `Bearer ${process.env.OPENROUTER_API_KEY}`,
+
                     "Content-Type": "application/json"
                 },
+
                 body: JSON.stringify({
-                    contents: [
+                    model: "openai/gpt-3.5-turbo",
+
+                    messages: [
                         {
-                            parts: [
-                                {
-                                    text: prompt
-                                }
-                            ]
+                            role: "user",
+                            content: prompt
                         }
                     ]
                 })
@@ -160,7 +164,7 @@ app.post("/quiz", async (req, res) => {
         console.log(JSON.stringify(data, null, 2));
 
         const quiz =
-            data.candidates?.[0]?.content?.parts?.[0]?.text;
+            data.choices?.[0]?.message?.content;
 
         res.json({
             quiz
