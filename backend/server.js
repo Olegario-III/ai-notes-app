@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import authRoutes from "./routes/auth.js";
 
 import "./database/db.js";
 
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 
 app.use("/notes", notesRoutes);
 app.use("/quiz", quizRoutes);
+app.use("/auth", authRoutes);
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
