@@ -1,9 +1,10 @@
 import express from "express";
 import db from "../database/db.js";
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
+router.get("/", authMiddleware, (req, res) => {
   let sql = "SELECT * FROM notes";
   const params = [];
 
@@ -25,7 +26,7 @@ router.get("/", (req, res) => {
   });
 });
 
-router.post("/", (req, res) => {
+router.post("/", authMiddleware, (req, res) => {
   const { content, category } = req.body;
 
   db.run(
@@ -49,7 +50,7 @@ router.post("/", (req, res) => {
   );
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", authMiddleware, (req, res) => {
   db.run(
     "DELETE FROM notes WHERE id = ?",
     [req.params.id],
