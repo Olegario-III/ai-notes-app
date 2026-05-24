@@ -1,6 +1,6 @@
 import express from "express";
 import db from "../database/db.js";
-const authMiddleware = require("../middleware/authMiddleware");
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 

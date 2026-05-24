@@ -13,7 +13,9 @@ db.run(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     content TEXT NOT NULL,
     category TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    user_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
   )
 `);
 
