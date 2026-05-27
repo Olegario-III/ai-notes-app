@@ -1,3 +1,5 @@
+// frontend/src/pages/NotesPage.jsx
+
 import { useEffect, useState } from "react";
 
 import AddNote from "../components/AddNote";
@@ -10,28 +12,41 @@ function NotesPage() {
   const [category, setCategory] = useState("");
   const [timeFilter, setTimeFilter] = useState("");
 
+  // EDITING STATE
+  const [editingNote, setEditingNote] = useState(null);
+
   const fetchNotes = async () => {
-    let url = "http://localhost:3000/notes";
+    try {
+      const token = localStorage.getItem("token");
 
-    const params = new URLSearchParams();
+      let url = "http://localhost:3000/notes";
 
-    if (category) {
-      params.append("category", category);
+      const params = new URLSearchParams();
+
+      if (category) {
+        params.append("category", category);
+      }
+
+      if (timeFilter) {
+        params.append("time", timeFilter);
+      }
+
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      setNotes(data);
+    } catch (error) {
+      console.log(error);
     }
-
-    if (timeFilter) {
-      params.append("time", timeFilter);
-    }
-
-    if (params.toString()) {
-      url += `?${params.toString()}`;
-    }
-
-    const res = await fetch(url);
-
-    const data = await res.json();
-
-    setNotes(data);
   };
 
   useEffect(() => {
@@ -40,7 +55,11 @@ function NotesPage() {
 
   return (
     <>
-      <AddNote fetchNotes={fetchNotes} />
+      <AddNote
+        fetchNotes={fetchNotes}
+        editingNote={editingNote}
+        setEditingNote={setEditingNote}
+      />
 
       <Filters
         category={category}
@@ -53,6 +72,7 @@ function NotesPage() {
       <NotesList
         notes={notes}
         fetchNotes={fetchNotes}
+        setEditingNote={setEditingNote}
       />
     </>
   );

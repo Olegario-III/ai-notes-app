@@ -1,49 +1,72 @@
 import { useState } from "react";
 
-function Quiz({ notes }) {
+function Quiz({
+  notes,
+  category,
+  difficulty
+}) {
   const [quiz, setQuiz] = useState("");
   const [loading, setLoading] = useState(false);
 
   const generateQuiz = async () => {
+    if (notes.length === 0) {
+      alert("No notes found");
+      return;
+    }
+
     setLoading(true);
 
-    const allNotes = notes
-      .map((note) => note.content)
-      .join("\n");
+    try {
+      const token = localStorage.getItem("token");
 
-    const res = await fetch(
-      "http://localhost:3000/quiz",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          notes: allNotes
-        })
-      }
-    );
+      const allNotes = notes
+        .map((note) => note.content)
+        .join("\n");
 
-    const data = await res.json();
+      const res = await fetch(
+        "http://localhost:3000/quiz",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            notes: allNotes,
+            category,
+            difficulty,
+          }),
+        }
+      );
 
-    setQuiz(data.quiz);
+      const data = await res.json();
+
+      setQuiz(data.quiz);
+
+    } catch (error) {
+      console.log(error);
+    }
 
     setLoading(false);
   };
 
   return (
     <div className="quiz-section">
+
       <button onClick={generateQuiz}>
         Generate Quiz
       </button>
 
-      {loading && <p>Generating quiz...</p>}
+      {loading && (
+        <p>Generating quiz...</p>
+      )}
 
       {quiz && (
         <div className="quiz-box">
           <pre>{quiz}</pre>
         </div>
       )}
+
     </div>
   );
 }

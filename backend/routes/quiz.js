@@ -1,17 +1,29 @@
+// backend/routes/quiz.js
+
 import express from "express";
 import { generateQuiz } from "../services/aiService.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { notes } = req.body;
+    const {
+      notes,
+      category,
+      difficulty
+    } = req.body;
 
-    const quiz = await generateQuiz(notes);
+    const quiz = await generateQuiz(
+      notes,
+      category,
+      difficulty
+    );
 
     res.json({
       quiz
     });
+
   } catch (error) {
     console.log(error);
 
