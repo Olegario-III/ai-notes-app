@@ -1,16 +1,17 @@
-// frontend/src/pages/QuizPage.jsx
-
 import { useEffect, useState } from "react";
 
 import Quiz from "../components/Quiz";
+import QuizFilters from "../components/QuizFilters";
+import QuizNotesPreview from "../components/QuizNotesPreview";
 
 function QuizPage() {
   const [notes, setNotes] = useState([]);
 
   const [category, setCategory] = useState("");
-
-  // NEW
   const [difficulty, setDifficulty] = useState("easy");
+  const [timeFilter, setTimeFilter] = useState("");
+
+  const [categories, setCategories] = useState([]);
 
   const fetchNotes = async () => {
     try {
@@ -22,6 +23,10 @@ function QuizPage() {
 
       if (category) {
         params.append("category", category);
+      }
+
+      if (timeFilter) {
+        params.append("time", timeFilter);
       }
 
       if (params.toString()) {
@@ -43,8 +48,39 @@ function QuizPage() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        "http://localhost:3000/notes",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      const uniqueCategories = [
+        ...new Set(
+          data
+            .map((note) => note.category)
+            .filter(Boolean)
+        ),
+      ];
+
+      setCategories(uniqueCategories);
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchNotes();
+    fetchCategories();
   }, []);
 
   return (
@@ -52,38 +88,18 @@ function QuizPage() {
 
       <h1>Quiz Generator</h1>
 
-      <div className="quiz-filters">
+      <QuizFilters
+        category={category}
+        setCategory={setCategory}
+        difficulty={difficulty}
+        setDifficulty={setDifficulty}
+        timeFilter={timeFilter}
+        setTimeFilter={setTimeFilter}
+        categories={categories}
+        fetchNotes={fetchNotes}
+      />
 
-        <input
-          type="text"
-          placeholder="Filter by category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        />
-
-        {/* DIFFICULTY SELECT */}
-        <select
-          value={difficulty}
-          onChange={(e) => setDifficulty(e.target.value)}
-        >
-          <option value="easy">
-            Easy
-          </option>
-
-          <option value="medium">
-            Medium
-          </option>
-
-          <option value="hard">
-            Hard
-          </option>
-        </select>
-
-        <button onClick={fetchNotes}>
-          Apply Filter
-        </button>
-
-      </div>
+      <QuizNotesPreview notes={notes} />
 
       <Quiz
         notes={notes}

@@ -24,6 +24,68 @@ body {
   padding: 40px 20px;
 }
 
+/* NAVIGATION */
+.sidebar {
+  display: flex;
+  gap: 14px;
+
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+/* NAV LINKS */
+.sidebar a {
+  text-decoration: none;
+
+  padding: 12px 18px;
+
+  border-radius: 16px;
+
+  font-weight: 600;
+  font-size: 0.95rem;
+
+  color: #cbd5e1;
+
+  background: rgba(15, 23, 42, 0.75);
+
+  border: 1px solid rgba(148, 163, 184, 0.12);
+
+  backdrop-filter: blur(14px);
+
+  transition: all 0.2s ease;
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* NAV HOVER */
+.sidebar a:hover {
+  transform: translateY(-2px);
+
+  background: rgba(30, 41, 59, 0.95);
+
+  border-color: rgba(59,130,246,0.35);
+
+  color: white;
+}
+
+/* ACTIVE PAGE */
+.sidebar a.active {
+  background:
+    linear-gradient(
+      to right,
+      #2563eb,
+      #3b82f6
+    );
+
+  color: white;
+
+  border-color: transparent;
+
+  box-shadow:
+    0 10px 25px rgba(37,99,235,0.35);
+}
+
 /* TITLE */
 .app h1 {
   text-align: center;

@@ -1,23 +1,21 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 function Sidebar() {
   return (
     <div className="sidebar">
-      <h2>AI Notes</h2>
 
-      <nav>
-        <Link to="/dashboard/notes">
-          Notes
-        </Link>
+      <NavLink to="/dashboard/notes">
+        Notes
+      </NavLink>
 
-        <Link to="/dashboard/quiz">
-          Quiz
-        </Link>
+      <NavLink to="/dashboard/quiz">
+        Quiz
+      </NavLink>
 
-        <Link to="/dashboard/profile">
-          Profile
-        </Link>
-      </nav>
+      <NavLink to="/dashboard/profile">
+        Profile
+      </NavLink>
+
     </div>
   );
 }
