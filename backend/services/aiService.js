@@ -5,7 +5,6 @@ export async function generateQuiz(
   category,
   difficulty
 ) {
-
   const response = await fetch(
     "https://openrouter.ai/api/v1/chat/completions",
     {
@@ -13,7 +12,7 @@ export async function generateQuiz(
 
       headers: {
         Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
 
       body: JSON.stringify({
@@ -25,15 +24,65 @@ export async function generateQuiz(
             content: `
 You are an AI quiz generator.
 
-Generate a clear and well-formatted quiz.
+Generate EXACTLY 10 questions based only on the provided notes.
 
-Rules:
-- Create 5 questions
-- Include answers
-- Match the requested difficulty
-- Focus only on the provided notes
-- Keep formatting clean and readable
-            `
+Difficulty Rules:
+
+EASY:
+- Multiple choice questions
+- 4 choices per question
+- Include the correct answer
+
+MEDIUM:
+- Enumeration or short-answer questions
+- Include the correct answer
+
+HARD:
+- Essay questions
+- Include a model answer
+
+Return ONLY valid JSON.
+
+Do NOT use markdown.
+Do NOT use code blocks.
+Do NOT add explanations before or after the JSON.
+
+Easy format:
+{
+  "questions": [
+    {
+      "question": "What is React?",
+      "choices": [
+        "Library",
+        "Database",
+        "Browser",
+        "Language"
+      ],
+      "answer": "Library"
+    }
+  ]
+}
+
+Medium format:
+{
+  "questions": [
+    {
+      "question": "Name the three parts of MVC.",
+      "answer": "Model, View, Controller"
+    }
+  ]
+}
+
+Hard format:
+{
+  "questions": [
+    {
+      "question": "Explain how React state works.",
+      "answer": "Model answer here"
+    }
+  ]
+}
+            `,
           },
 
           {
@@ -47,15 +96,16 @@ Notes:
 ${notes}
 
 Generate the quiz now.
-            `
-          }
-        ]
-      })
+            `,
+          },
+        ],
+      }),
     }
   );
 
   const data = await response.json();
 
+  console.log("AI Response:");
   console.log(data);
 
   return data.choices[0].message.content;

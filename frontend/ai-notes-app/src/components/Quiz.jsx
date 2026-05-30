@@ -1,3 +1,4 @@
+//frontend\ai-notes-app\src\components\Quiz.jsx
 import { useState } from "react";
 
 function Quiz({
