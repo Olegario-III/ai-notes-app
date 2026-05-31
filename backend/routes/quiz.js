@@ -11,7 +11,7 @@ router.post("/", authMiddleware, async (req, res) => {
     const {
       notes,
       category,
-      difficulty
+      difficulty,
     } = req.body;
 
     const quiz = await generateQuiz(
@@ -20,15 +20,13 @@ router.post("/", authMiddleware, async (req, res) => {
       difficulty
     );
 
-    res.json({
-      quiz
-    });
+    res.json(quiz);
 
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     res.status(500).json({
-      error: "Failed to generate quiz"
+      error: "Failed to generate quiz",
     });
   }
 });

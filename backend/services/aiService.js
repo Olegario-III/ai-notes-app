@@ -26,6 +26,10 @@ You are an AI quiz generator.
 
 Generate EXACTLY 10 questions based only on the provided notes.
 
+IMPORTANT:
+- The quiz MUST contain exactly 10 questions.
+- Returning fewer than 10 questions is incorrect.
+
 Difficulty Rules:
 
 EASY:
@@ -105,8 +109,20 @@ Generate the quiz now.
 
   const data = await response.json();
 
-  console.log("AI Response:");
-  console.log(data);
+  const quizText =
+    data.choices[0].message.content;
 
-  return data.choices[0].message.content;
+  console.log("AI Response:");
+  console.log(quizText);
+
+  try {
+    const quiz = JSON.parse(quizText);
+
+    return quiz;
+  } catch (error) {
+    console.error("Failed to parse quiz JSON:");
+    console.error(error);
+
+    throw new Error("Invalid quiz format returned by AI");
+  }
 }
