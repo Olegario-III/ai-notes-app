@@ -48,8 +48,6 @@ function Quiz({
 
       const data = await res.json();
 
-      console.log(data);
-
       setQuiz(data.questions || []);
       setAnswers({});
       setSubmitted(false);
@@ -74,7 +72,7 @@ function Quiz({
     }));
   };
 
-  const submitQuiz = () => {
+  const submitQuiz = async () => {
     if (difficulty === "hard") {
       alert(
         "Essay scoring will be added later."
@@ -82,31 +80,80 @@ function Quiz({
       return;
     }
 
-    let correctAnswers = 0;
+    try {
+      let correctAnswers = 0;
 
-    quiz.forEach((question, index) => {
-      const userAnswer =
-        answers[index]?.trim().toLowerCase() || "";
+      const quizAnswers = quiz.map(
+        (question, index) => {
+          const userAnswer =
+            answers[index] || "";
 
-      const correctAnswer =
-        question.answer
-          ?.trim()
-          .toLowerCase() || "";
+          const isCorrect =
+            userAnswer.trim().toLowerCase() ===
+            question.answer
+              ?.trim()
+              .toLowerCase();
 
-      if (userAnswer === correctAnswer) {
-        correctAnswers++;
-      }
-    });
+          if (isCorrect) {
+            correctAnswers++;
+          }
 
-    const totalQuestions = quiz.length;
+          return {
+            question: question.question,
+            correctAnswer:
+              question.answer,
+            userAnswer,
+            isCorrect,
+          };
+        }
+      );
 
-    const quizPercentage = Math.round(
-      (correctAnswers / totalQuestions) * 100
-    );
+      const totalQuestions =
+        quiz.length;
 
-    setScore(correctAnswers);
-    setPercentage(quizPercentage);
-    setSubmitted(true);
+      const quizPercentage =
+        Math.round(
+          (correctAnswers /
+            totalQuestions) *
+            100
+        );
+
+      const token =
+        localStorage.getItem("token");
+
+      await fetch(
+        "http://localhost:3000/quiz-history",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            category,
+            difficulty,
+            score: correctAnswers,
+            totalQuestions,
+            percentage:
+              quizPercentage,
+            answers: quizAnswers,
+          }),
+        }
+      );
+
+      setScore(correctAnswers);
+      setPercentage(
+        quizPercentage
+      );
+      setSubmitted(true);
+
+    } catch (error) {
+      console.log(error);
+      alert(
+        "Failed to save quiz result."
+      );
+    }
   };
 
   return (
@@ -123,81 +170,114 @@ function Quiz({
         <div className="quiz-box">
           <h2>Quiz</h2>
 
-          {quiz.map((question, index) => (
-            <div
-              key={index}
-              className="quiz-question"
-            >
-              <h3>
-                {index + 1}. {question.question}
-              </h3>
+          {quiz.map(
+            (question, index) => (
+              <div
+                key={index}
+                className="quiz-question"
+              >
+                <h3>
+                  {index + 1}.{" "}
+                  {question.question}
+                </h3>
 
-              {/* EASY */}
-              {difficulty === "easy" &&
-                question.choices?.map(
-                  (choice, choiceIndex) => (
-                    <label
-                      key={choiceIndex}
-                      className="quiz-choice"
-                    >
-                      <input
-                        type="radio"
-                        name={`question-${index}`}
-                        value={choice}
-                        checked={
-                          answers[index] === choice
+                {/* EASY */}
+                {difficulty ===
+                  "easy" &&
+                  question.choices?.map(
+                    (
+                      choice,
+                      choiceIndex
+                    ) => (
+                      <label
+                        key={
+                          choiceIndex
                         }
-                        disabled={submitted}
-                        onChange={(e) =>
-                          handleAnswerChange(
-                            index,
-                            e.target.value
-                          )
-                        }
-                      />
+                        className="quiz-choice"
+                      >
+                        <input
+                          type="radio"
+                          name={`question-${index}`}
+                          value={choice}
+                          checked={
+                            answers[
+                              index
+                            ] ===
+                            choice
+                          }
+                          disabled={
+                            submitted
+                          }
+                          onChange={(
+                            e
+                          ) =>
+                            handleAnswerChange(
+                              index,
+                              e.target
+                                .value
+                            )
+                          }
+                        />
 
-                      {choice}
-                    </label>
-                  )
+                        {choice}
+                      </label>
+                    )
+                  )}
+
+                {/* MEDIUM */}
+                {difficulty ===
+                  "medium" && (
+                  <input
+                    type="text"
+                    placeholder="Type your answer..."
+                    value={
+                      answers[
+                        index
+                      ] || ""
+                    }
+                    disabled={
+                      submitted
+                    }
+                    onChange={(
+                      e
+                    ) =>
+                      handleAnswerChange(
+                        index,
+                        e.target
+                          .value
+                      )
+                    }
+                  />
                 )}
 
-              {/* MEDIUM */}
-              {difficulty === "medium" && (
-                <input
-                  type="text"
-                  placeholder="Type your answer..."
-                  value={
-                    answers[index] || ""
-                  }
-                  disabled={submitted}
-                  onChange={(e) =>
-                    handleAnswerChange(
-                      index,
-                      e.target.value
-                    )
-                  }
-                />
-              )}
-
-              {/* HARD */}
-              {difficulty === "hard" && (
-                <textarea
-                  rows="5"
-                  placeholder="Write your answer..."
-                  value={
-                    answers[index] || ""
-                  }
-                  disabled={submitted}
-                  onChange={(e) =>
-                    handleAnswerChange(
-                      index,
-                      e.target.value
-                    )
-                  }
-                />
-              )}
-            </div>
-          ))}
+                {/* HARD */}
+                {difficulty ===
+                  "hard" && (
+                  <textarea
+                    rows="5"
+                    placeholder="Write your answer..."
+                    value={
+                      answers[
+                        index
+                      ] || ""
+                    }
+                    disabled={
+                      submitted
+                    }
+                    onChange={(
+                      e
+                    ) =>
+                      handleAnswerChange(
+                        index,
+                        e.target
+                          .value
+                      )
+                    }
+                  />
+                )}
+              </div>
+            )
+          )}
 
           {!submitted && (
             <button
@@ -210,14 +290,18 @@ function Quiz({
 
           {submitted && (
             <div className="quiz-result">
-              <h3>Quiz Result</h3>
+              <h3>
+                Quiz Result
+              </h3>
 
               <p>
-                Score: {score} / {quiz.length}
+                Score: {score} /{" "}
+                {quiz.length}
               </p>
 
               <p>
-                Percentage: {percentage}%
+                Percentage:{" "}
+                {percentage}%
               </p>
             </div>
           )}
