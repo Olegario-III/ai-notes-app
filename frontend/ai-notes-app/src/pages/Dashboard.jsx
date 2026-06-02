@@ -1,13 +1,14 @@
 import {
   Routes,
   Route,
-  Navigate
+  Navigate,
 } from "react-router-dom";
 
 import Sidebar from "../components/Sidebar";
 
 import NotesPage from "./NotesPage";
 import QuizPage from "./QuizPage";
+import QuizHistoryPage from "./QuizHistoryPage";
 import ProfilePage from "./ProfilePage";
 
 function Dashboard() {
@@ -19,7 +20,9 @@ function Dashboard() {
         <Routes>
           <Route
             path="/"
-            element={<Navigate to="notes" />}
+            element={
+              <Navigate to="notes" />
+            }
           />
 
           <Route
@@ -30,6 +33,13 @@ function Dashboard() {
           <Route
             path="quiz"
             element={<QuizPage />}
+          />
+
+          <Route
+            path="quiz-history"
+            element={
+              <QuizHistoryPage />
+            }
           />
 
           <Route

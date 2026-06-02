@@ -3,7 +3,6 @@ import { NavLink } from "react-router-dom";
 function Sidebar() {
   return (
     <div className="sidebar">
-
       <NavLink to="/dashboard/notes">
         Notes
       </NavLink>
@@ -12,10 +11,13 @@ function Sidebar() {
         Quiz
       </NavLink>
 
+      <NavLink to="/dashboard/quiz-history">
+        Quiz History
+      </NavLink>
+
       <NavLink to="/dashboard/profile">
         Profile
       </NavLink>
-
     </div>
   );
 }
