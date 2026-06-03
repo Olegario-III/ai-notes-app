@@ -27,7 +27,6 @@ function QuizHistoryPage() {
       const data = await res.json();
 
       setHistory(data);
-
     } catch (error) {
       console.log(error);
     }
@@ -35,9 +34,18 @@ function QuizHistoryPage() {
     setLoading(false);
   };
 
-  const viewQuizDetails = async (
+  const toggleQuizDetails = async (
     historyId
   ) => {
+    // Hide if already open
+    if (
+      selectedQuiz &&
+      selectedQuiz.id === historyId
+    ) {
+      setSelectedQuiz(null);
+      return;
+    }
+
     try {
       const token =
         localStorage.getItem("token");
@@ -54,7 +62,6 @@ function QuizHistoryPage() {
       const data = await res.json();
 
       setSelectedQuiz(data);
-
     } catch (error) {
       console.log(error);
     }
@@ -118,102 +125,121 @@ function QuizHistoryPage() {
 
                 <button
                   onClick={() =>
-                    viewQuizDetails(
+                    toggleQuizDetails(
                       quiz.id
                     )
                   }
                 >
-                  View Details
+                  {selectedQuiz?.id ===
+                  quiz.id
+                    ? "Hide Details"
+                    : "View Details"}
                 </button>
+
+                {selectedQuiz?.id ===
+                  quiz.id && (
+                  <div className="quiz-details">
+                    <hr />
+
+                    <h3>
+                      Quiz Details
+                    </h3>
+
+                    <p>
+                      Category:{" "}
+                      {
+                        selectedQuiz.category
+                      }
+                    </p>
+
+                    <p>
+                      Difficulty:{" "}
+                      {
+                        selectedQuiz.difficulty
+                      }
+                    </p>
+
+                    <p>
+                      Score:{" "}
+                      {selectedQuiz.score}/
+                      {
+                        selectedQuiz.total_questions
+                      }
+                    </p>
+
+                    <p>
+                      Percentage:{" "}
+                      {
+                        selectedQuiz.percentage
+                      }
+                      %
+                    </p>
+
+                    <hr />
+
+                    {selectedQuiz.answers?.map(
+                      (
+                        answer,
+                        index
+                      ) => (
+                        <div
+                          key={
+                            answer.id
+                          }
+                          className="answer-card"
+                        >
+                          <h4>
+                            Question{" "}
+                            {index + 1}
+                          </h4>
+
+                          <p>
+                            <strong>
+                              Question:
+                            </strong>{" "}
+                            {
+                              answer.question
+                            }
+                          </p>
+
+                          <p>
+                            <strong>
+                              Your Answer:
+                            </strong>{" "}
+                            {
+                              answer.user_answer
+                            }
+                          </p>
+
+                          <p>
+                            <strong>
+                              Correct
+                              Answer:
+                            </strong>{" "}
+                            {
+                              answer.correct_answer
+                            }
+                          </p>
+
+                          <p>
+                            <strong>
+                              Result:
+                            </strong>{" "}
+                            {answer.is_correct
+                              ? "✅ Correct"
+                              : "❌ Incorrect"}
+                          </p>
+
+                          <hr />
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
         )}
-
-      {selectedQuiz && (
-        <div className="quiz-details">
-          <h2>Quiz Details</h2>
-
-          <p>
-            Category:{" "}
-            {selectedQuiz.category}
-          </p>
-
-          <p>
-            Difficulty:{" "}
-            {selectedQuiz.difficulty}
-          </p>
-
-          <p>
-            Score: {selectedQuiz.score}/
-            {
-              selectedQuiz.total_questions
-            }
-          </p>
-
-          <p>
-            Percentage:{" "}
-            {selectedQuiz.percentage}%
-          </p>
-
-          <hr />
-
-          {selectedQuiz.answers?.map(
-            (answer, index) => (
-              <div
-                key={answer.id}
-                className="answer-card"
-              >
-                <h4>
-                  Question {index + 1}
-                </h4>
-
-                <p>
-                  <strong>
-                    Question:
-                  </strong>{" "}
-                  {answer.question}
-                </p>
-
-                <p>
-                  <strong>
-                    Your Answer:
-                  </strong>{" "}
-                  {answer.user_answer}
-                </p>
-
-                <p>
-                  <strong>
-                    Correct Answer:
-                  </strong>{" "}
-                  {
-                    answer.correct_answer
-                  }
-                </p>
-
-                <p>
-                  <strong>
-                    Result:
-                  </strong>{" "}
-                  {answer.is_correct
-                    ? "✅ Correct"
-                    : "❌ Incorrect"}
-                </p>
-
-                <hr />
-              </div>
-            )
-          )}
-
-          <button
-            onClick={() =>
-              setSelectedQuiz(null)
-            }
-          >
-            Close
-          </button>
-        </div>
-      )}
     </div>
   );
 }
