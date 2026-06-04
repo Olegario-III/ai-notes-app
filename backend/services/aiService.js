@@ -126,3 +126,65 @@ Generate the quiz now.
     throw new Error("Invalid quiz format returned by AI");
   }
 }
+
+
+export async function gradeQuizAnswers(
+  questions
+) {
+  const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        model: "openai/gpt-3.5-turbo",
+
+        messages: [
+          {
+            role: "system",
+            content: `
+You are an AI quiz grader.
+
+Evaluate each answer based on meaning, not exact wording.
+
+If the student's answer conveys the same idea as the correct answer,
+mark it correct.
+
+Return ONLY valid JSON.
+
+Format:
+
+{
+  "results": [
+    {
+      "isCorrect": true,
+      "feedback": "Answer captures the correct concept."
+    }
+  ]
+}
+            `,
+          },
+
+          {
+            role: "user",
+            content: JSON.stringify(
+              questions
+            ),
+          },
+        ],
+      }),
+    }
+  );
+
+  const data = await response.json();
+
+  const text =
+    data.choices[0].message.content;
+
+  return JSON.parse(text);
+}

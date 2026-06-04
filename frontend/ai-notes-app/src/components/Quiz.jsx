@@ -8,6 +8,7 @@ import QuizResult from "./QuizResult";
 import {
   generateQuizRequest,
   saveQuizHistory,
+  gradeQuiz,
 } from "../services/quizService";
 
 import {
@@ -77,12 +78,36 @@ function Quiz({
   };
 
   const submitQuiz = async () => {
-    if (difficulty === "hard") {
-      alert(
-        "Essay scoring will be added later."
-      );
-      return;
-    }
+    if (
+  difficulty === "medium" ||
+  difficulty === "hard"
+) {
+  const gradingData =
+    quiz.map(
+      (
+        question,
+        index
+      ) => ({
+        question:
+          question.question,
+
+        correctAnswer:
+          question.answer,
+
+        userAnswer:
+          answers[index] || "",
+      })
+    );
+
+  const aiResult =
+    await gradeQuiz(
+      gradingData
+    );
+
+  console.log(aiResult);
+
+  return;
+}
 
     try {
       const result =

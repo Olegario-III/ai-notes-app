@@ -53,3 +53,31 @@ export async function saveQuizHistory(
 
   return await res.json();
 }
+
+export async function gradeQuiz(
+  questions
+) {
+  const token =
+    localStorage.getItem("token");
+
+  const response = await fetch(
+    "http://localhost:3000/grade-quiz",
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type":
+          "application/json",
+
+        Authorization:
+          `Bearer ${token}`,
+      },
+
+      body: JSON.stringify({
+        questions,
+      }),
+    }
+  );
+
+  return response.json();
+}

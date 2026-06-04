@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.js";
 import quizHistoryRoutes from "./routes/quizHistory.js";
+import gradeQuizRoute from "./routes/gradeQuiz.js"
 
 import "./database/db.js";
 
@@ -28,6 +29,10 @@ app.use("/auth", authRoutes);
 app.use(
   "/quiz-history",
   quizHistoryRoutes
+);
+app.use(
+  "/grade-quiz",
+  gradeQuizRoute
 );
 
 app.listen(3000, () => {
