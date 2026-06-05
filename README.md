@@ -1,47 +1,98 @@
 # AI Notes Quiz App
 
-A full-stack AI-powered notes and quiz web application built with React, Express, and SQLite. Users can create notes, organize them by category, generate AI quizzes from their notes, and manage learning progress through an interactive dashboard.
+A full-stack AI-powered study application built with React, Express, SQLite, JWT Authentication, and OpenRouter AI.
+
+Users can create and organize notes, generate AI-powered quizzes from their notes, track quiz history, and manage their learning progress through a secure dashboard.
 
 ---
 
 # Features
 
+## Authentication
+
+* User registration
+* User login
+* JWT authentication
+* Password hashing with bcrypt
+* Protected routes
+* User-specific data access
+* Logout functionality
+
+---
+
 ## Notes Management
 
 * Add notes
+* Edit notes
 * Delete notes
-* Fetch saved notes
-* Filter by category
-* Filter by time:
+* View saved notes
+* Category filtering
+* Time filtering:
 
   * Today
   * This Week
   * This Month
+* User-specific notes storage
+
+---
 
 ## AI Quiz Generator
 
-* Generate quizzes from notes using AI
-* OpenRouter API integration
-* Supports dynamic AI prompts
-* Planned quiz difficulty system:
+Generate quizzes directly from your notes using AI.
 
-  * Easy → Multiple Choice
-  * Medium → Enumeration
-  * Hard → Essay
+### Difficulty Levels
 
-## Dashboard System
+#### Easy
 
-* Sidebar navigation
+* Multiple choice questions
+* 4 answer choices
+* Automatically scored
+
+#### Medium
+
+* Enumeration / short-answer questions
+* AI-assisted grading (in development)
+
+#### Hard
+
+* Essay questions
+* AI essay scoring (in development)
+
+### Quiz Features
+
+* Generate quizzes from notes
+* Category-based quiz generation
+* AI-generated questions
+* Automatic scoring
+* Quiz result calculation
+* Percentage scoring
+
+---
+
+## Quiz History
+
+Track previous quiz attempts.
+
+Features:
+
+* Save completed quizzes
+* View quiz history
+* Expandable history cards
+* Review previous answers
+* View score and percentage
+* User-specific quiz history
+
+---
+
+## Dashboard
+
+Single-page application dashboard with:
+
 * Notes page
 * Quiz page
+* Quiz history page
 * Profile page
-
-## Authentication (Planned)
-
-* User registration
-* Login system
-* JWT authentication
-* Protected dashboard routes
+* Sidebar navigation
 
 ---
 
@@ -53,42 +104,68 @@ A full-stack AI-powered notes and quiz web application built with React, Express
 * Vite
 * React Router DOM
 * CSS3
+* Component-based architecture
 
 ## Backend
 
-* Express.js
 * Node.js
+* Express.js
+* JWT Authentication
+* bcrypt
 
 ## Database
 
 * SQLite
 
+Tables:
+
+* users
+* notes
+* quiz_history
+* quiz_answers
+
 ## AI Integration
 
 * OpenRouter API
-* GPT-based quiz generation
+* GPT-powered quiz generation
+
+Current model:
+
+* openai/gpt-3.5-turbo
 
 ---
 
 # Project Structure
 
 ```txt
-frontend/
+src/
 │
 ├── components/
 │   ├── Sidebar.jsx
 │   ├── AddNote.jsx
 │   ├── NotesList.jsx
 │   ├── Filters.jsx
-│   └── Quiz.jsx
+│   ├── Quiz.jsx
+│   ├── QuizQuestion.jsx
+│   ├── QuizResult.jsx
+│   ├── QuizFilters.jsx
+│   ├── QuizNotesPreview.jsx
+│   └── ProtectedRoute.jsx
 │
 ├── pages/
 │   ├── Dashboard.jsx
 │   ├── NotesPage.jsx
 │   ├── QuizPage.jsx
+│   ├── QuizHistoryPage.jsx
 │   ├── ProfilePage.jsx
 │   ├── Login.jsx
 │   └── Register.jsx
+│
+├── services/
+│   └── quizService.js
+│
+├── utils/
+│   └── quizUtils.js
 │
 ├── App.jsx
 ├── main.jsx
@@ -98,17 +175,23 @@ frontend/
 backend/
 │
 ├── routes/
+│   ├── auth.js
 │   ├── notes.js
-│   └── quiz.js
+│   ├── quiz.js
+│   └── quizHistory.js
 │
 ├── database/
 │   └── db.js
+│
+├── middleware/
+│   └── authMiddleware.js
 │
 ├── services/
 │   └── aiService.js
 │
 ├── server.js
 ├── notes.db
+├── package.json
 └── .env
 ```
 
@@ -116,9 +199,25 @@ backend/
 
 # API Endpoints
 
-## Notes Routes
+## Authentication
 
-### Get All Notes
+### Register
+
+```http
+POST /auth/register
+```
+
+### Login
+
+```http
+POST /auth/login
+```
+
+---
+
+## Notes
+
+### Get Notes
 
 ```http
 GET /notes
@@ -130,13 +229,10 @@ GET /notes
 POST /notes
 ```
 
-Request Body:
+### Update Note
 
-```json
-{
-  "content": "Sample note",
-  "category": "Programming"
-}
+```http
+PUT /notes/:id
 ```
 
 ### Delete Note
@@ -147,7 +243,7 @@ DELETE /notes/:id
 
 ---
 
-# Quiz Route
+## Quiz
 
 ### Generate Quiz
 
@@ -155,12 +251,26 @@ DELETE /notes/:id
 POST /quiz
 ```
 
-Request Body:
+---
 
-```json
-{
-  "notes": "Your notes content here"
-}
+## Quiz History
+
+### Save Quiz Result
+
+```http
+POST /quiz-history
+```
+
+### Get Quiz History
+
+```http
+GET /quiz-history
+```
+
+### Get Quiz Attempt Details
+
+```http
+GET /quiz-history/:id
 ```
 
 ---
@@ -171,6 +281,8 @@ Create a `.env` file inside the backend folder:
 
 ```env
 OPENROUTER_API_KEY=your_api_key_here
+
+JWT_SECRET=your_jwt_secret_here
 ```
 
 ---
@@ -180,7 +292,7 @@ OPENROUTER_API_KEY=your_api_key_here
 ## Clone Repository
 
 ```bash
-git clone <your-repo-url>
+git clone <your-repository-url>
 ```
 
 ---
@@ -189,7 +301,9 @@ git clone <your-repo-url>
 
 ```bash
 cd frontend
+
 npm install
+
 npm run dev
 ```
 
@@ -199,48 +313,60 @@ npm run dev
 
 ```bash
 cd backend
+
 npm install
+
 node server.js
 ```
 
 ---
 
-# Current Learning Goals
+# Current Limitations
 
-This project was built to practice and understand:
-
-* Full-stack development
-* REST APIs
-* Express routing
-* SQLite queries
-* React hooks
-* React Router
-* AI API integration
-* Authentication systems
-* Async/await
-* JSON handling
-* Frontend/backend communication
+* Medium difficulty answers still use strict answer matching
+* Essay questions are not yet scored
+* AI feedback/remarks are not yet implemented
+* No quiz history pagination
+* PostgreSQL migration not yet completed
 
 ---
 
-# Future Improvements
+# Planned Improvements
 
-* Quiz scoring system
-* Quiz history saving
-* AI answer checking
-* Authentication with JWT
-* Protected routes
-* User profiles
-* Better responsive UI
-* Deployment
+* AI grading for medium difficulty quizzes
+* AI essay scoring
+* Personalized AI feedback and remarks
+* Quiz answer feedback
+* Quiz history detail component refactor
+* Dashboard enhancements
 * PostgreSQL migration
-* Markdown support
-* Rich text editor
+* Deployment
 * AI flashcards
-* Export notes as PDF
+* Export notes
+* Rich text editor
+
+---
+
+# Learning Objectives
+
+This project was built to practice:
+
+* React development
+* Component architecture
+* REST API development
+* Express.js
+* SQLite
+* Authentication with JWT
+* Password hashing
+* Protected routes
+* AI integration
+* Full-stack development
+* Database relationships
+* Async programming
+* State management
 
 ---
 
 # Author
 
-Built by Olegario Aleño III as a full-stack learning project focused on AI-powered educational tools.
+Built by Olegario Aleño III as a full-stack learning project focused on AI-powered educational tools and modern web development.
