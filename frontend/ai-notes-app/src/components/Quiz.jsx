@@ -78,60 +78,111 @@ function Quiz({
   };
 
   const submitQuiz = async () => {
-    if (
-  difficulty === "medium" ||
-  difficulty === "hard"
-) {
-  const gradingData =
-    quiz.map(
-      (
-        question,
-        index
-      ) => ({
-        question:
-          question.question,
-
-        correctAnswer:
-          question.answer,
-
-        userAnswer:
-          answers[index] || "",
-      })
-    );
-
-  const aiResult =
-    await gradeQuiz(
-      gradingData
-    );
-
-  console.log(aiResult);
-
-  return;
-}
-
     try {
-      const result =
-        calculateQuizResult(
-          quiz,
-          answers
+      // EASY = local scoring
+      if (difficulty === "easy") {
+        const result =
+          calculateQuizResult(
+            quiz,
+            answers
+          );
+
+        await saveQuizHistory({
+          category,
+          difficulty,
+          score: result.score,
+          totalQuestions:
+            result.totalQuestions,
+          percentage:
+            result.percentage,
+          answers:
+            result.quizAnswers,
+        });
+
+        setScore(result.score);
+
+        setPercentage(
+          result.percentage
+        );
+
+        setSubmitted(true);
+
+        return;
+      }
+
+      // MEDIUM + HARD = AI grading
+      const gradingData = quiz.map(
+        (question, index) => ({
+          question:
+            question.question,
+
+          correctAnswer:
+            question.answer,
+
+          userAnswer:
+            answers[index] || "",
+        })
+      );
+
+      const aiResult =
+        await gradeQuiz(
+          gradingData
+        );
+
+      console.log(
+        "AI Grading Result:",
+        aiResult
+      );
+
+      const aiScore =
+        aiResult.results.filter(
+          (result) =>
+            result.isCorrect
+        ).length;
+
+      const aiPercentage =
+        Math.round(
+          (aiScore /
+            quiz.length) *
+            100
+        );
+
+      const quizAnswers =
+        quiz.map(
+          (question, index) => ({
+            question:
+              question.question,
+
+            correctAnswer:
+              question.answer,
+
+            userAnswer:
+              answers[index] || "",
+
+            isCorrect:
+              aiResult.results[
+                index
+              ]?.isCorrect ||
+              false,
+          })
         );
 
       await saveQuizHistory({
         category,
         difficulty,
-        score: result.score,
+        score: aiScore,
         totalQuestions:
-          result.totalQuestions,
+          quiz.length,
         percentage:
-          result.percentage,
+          aiPercentage,
         answers:
-          result.quizAnswers,
+          quizAnswers,
       });
 
-      setScore(result.score);
+      setScore(aiScore);
 
       setPercentage(
-        result.percentage
+        aiPercentage
       );
 
       setSubmitted(true);
