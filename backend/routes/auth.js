@@ -6,95 +6,139 @@ import db from "../database/db.js";
 
 const router = express.Router();
 
+/*
+=========================
+REGISTER
+=========================
+*/
 router.post("/register", async (req, res) => {
   const {
     username,
     email,
-    password
+    password,
   } = req.body;
 
   if (!username || !email || !password) {
     return res.status(400).json({
-      error: "All fields are required"
+      error: "All fields are required",
     });
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(
-      password,
-      10
-    );
-
-    db.run(
+    // Check if email already exists
+    db.get(
       `
-        INSERT INTO users (
-          username,
-          email,
-          password
-        )
-        VALUES (?, ?, ?)
+      SELECT id
+      FROM users
+      WHERE email = ?
       `,
-      [username, email, hashedPassword],
-      function (err) {
+      [email],
+      async (err, existingUser) => {
         if (err) {
           return res.status(500).json({
-            error: err.message
+            error: err.message,
           });
         }
 
-        res.json({
-          message: "User registered successfully"
-        });
+        if (existingUser) {
+          return res.status(409).json({
+            error: "Email is already registered",
+          });
+        }
+
+        const hashedPassword =
+          await bcrypt.hash(password, 10);
+
+        db.run(
+          `
+          INSERT INTO users (
+            username,
+            email,
+            password,
+            role
+          )
+          VALUES (?, ?, ?, ?)
+          `,
+          [
+            username,
+            email,
+            hashedPassword,
+            "user",
+          ],
+          function (err) {
+            if (err) {
+              return res.status(500).json({
+                error: err.message,
+              });
+            }
+
+            res.status(201).json({
+              message:
+                "User registered successfully",
+            });
+          }
+        );
       }
     );
   } catch (error) {
+    console.log(error);
+
     res.status(500).json({
-      error: "Registration failed"
+      error: "Registration failed",
     });
   }
 });
 
+/*
+=========================
+LOGIN
+=========================
+*/
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
 
   db.get(
     `
-      SELECT * FROM users
-      WHERE email = ?
+    SELECT *
+    FROM users
+    WHERE email = ?
     `,
     [email],
     async (err, user) => {
       if (err) {
         return res.status(500).json({
-          error: err.message
+          error: err.message,
         });
       }
 
       if (!user) {
         return res.status(401).json({
-          error: "Invalid credentials"
+          error: "Invalid credentials",
         });
       }
 
-      const isMatch = await bcrypt.compare(
-        password,
-        user.password
-      );
+      const isMatch =
+        await bcrypt.compare(
+          password,
+          user.password
+        );
 
       if (!isMatch) {
         return res.status(401).json({
-          error: "Invalid credentials"
+          error: "Invalid credentials",
         });
       }
 
       const token = jwt.sign(
         {
           id: user.id,
-          email: user.email
+          username: user.username,
+          email: user.email,
+          role: user.role,
         },
         process.env.JWT_SECRET,
         {
-          expiresIn: "7d"
+          expiresIn: "7d",
         }
       );
 
@@ -103,8 +147,9 @@ router.post("/login", (req, res) => {
         user: {
           id: user.id,
           username: user.username,
-          email: user.email
-        }
+          email: user.email,
+          role: user.role,
+        },
       });
     }
   );
