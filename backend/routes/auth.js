@@ -25,7 +25,6 @@ router.post("/register", async (req, res) => {
   }
 
   try {
-    // Check if email already exists
     db.get(
       `
       SELECT id
@@ -54,16 +53,14 @@ router.post("/register", async (req, res) => {
           INSERT INTO users (
             username,
             email,
-            password,
-            role
+            password
           )
-          VALUES (?, ?, ?, ?)
+          VALUES (?, ?, ?)
           `,
           [
             username,
             email,
             hashedPassword,
-            "user",
           ],
           function (err) {
             if (err) {
@@ -96,6 +93,12 @@ LOGIN
 */
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      error: "Email and password are required",
+    });
+  }
 
   db.get(
     `
