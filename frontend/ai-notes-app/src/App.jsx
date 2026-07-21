@@ -1,8 +1,10 @@
+// src/App.jsx
+
 import {
   BrowserRouter,
   Routes,
   Route,
-  Navigate
+  Navigate,
 } from "react-router-dom";
 
 import Dashboard from "./pages/Dashboard";
@@ -15,11 +17,18 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Redirect root */}
         <Route
           path="/"
-          element={<Navigate to="/login" />}
+          element={
+            <Navigate
+              to="/login"
+              replace
+            />
+          }
         />
 
+        {/* Authentication */}
         <Route
           path="/login"
           element={<Login />}
@@ -30,12 +39,24 @@ function App() {
           element={<Register />}
         />
 
+        {/* Protected Dashboard */}
         <Route
           path="/dashboard/*"
           element={
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
+          }
+        />
+
+        {/* Unknown Routes */}
+        <Route
+          path="*"
+          element={
+            <Navigate
+              to="/login"
+              replace
+            />
           }
         />
       </Routes>
