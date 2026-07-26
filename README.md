@@ -1,372 +1,197 @@
 # AI Notes Quiz App
 
-A full-stack AI-powered study application built with React, Express, SQLite, JWT Authentication, and OpenRouter AI.
+A full-stack study app for creating notes, generating AI-powered quizzes from those notes, reviewing quiz history, and managing user access. The project combines a React frontend with an Express backend, SQLite storage, JWT authentication, and OpenRouter-based AI quiz generation.
 
-Users can create and organize notes, generate AI-powered quizzes from their notes, track quiz history, and manage their learning progress through a secure dashboard.
+## What the app does
 
----
+- Register and log in with secure JWT-based authentication
+- Create, edit, delete, and filter personal notes
+- Generate quizzes from saved notes using AI
+- Choose quiz difficulty levels: easy, medium, and hard
+- Review past quiz attempts with answers and scores
+- Access an admin-only user management area
 
-# Features
+## Features
 
-## Authentication
+### Authentication
 
-* User registration
-* User login
-* JWT authentication
-* Password hashing with bcrypt
-* Protected routes
-* User-specific data access
-* Logout functionality
+- User registration and login
+- Password hashing with bcrypt
+- Protected routes for authenticated users
+- Role-based access with basic admin support
 
----
+### Notes
 
-## Notes Management
+- Add and manage notes per user
+- Filter notes by category and time range
+- Keep notes organized in a simple dashboard experience
 
-* Add notes
-* Edit notes
-* Delete notes
-* View saved notes
-* Category filtering
-* Time filtering:
+### Quiz generation
 
-  * Today
-  * This Week
-  * This Month
-* User-specific notes storage
+- Generate quizzes from selected notes
+- Support for easy, medium, and hard questions
+- AI-generated questions and answers through OpenRouter
+- Score results and track performance over time
 
----
+### Quiz history
 
-## AI Quiz Generator
+- Save completed quiz attempts
+- Review scores, percentages, and individual answers
+- Expand quiz history details for each attempt
 
-Generate quizzes directly from your notes using AI.
+## Tech stack
 
-### Difficulty Levels
+### Frontend
 
-#### Easy
+- React
+- Vite
+- React Router DOM
+- CSS
 
-* Multiple choice questions
-* 4 answer choices
-* Automatically scored
+### Backend
 
-#### Medium
+- Node.js
+- Express
+- JWT authentication
+- bcrypt
+- CORS
 
-* Enumeration / short-answer questions
-* AI-assisted grading (in development)
+### Data and AI
 
-#### Hard
+- SQLite
+- OpenRouter API
+- GPT-based quiz generation via OpenAI-compatible model
 
-* Essay questions
-* AI essay scoring (in development)
+## Project structure
 
-### Quiz Features
-
-* Generate quizzes from notes
-* Category-based quiz generation
-* AI-generated questions
-* Automatic scoring
-* Quiz result calculation
-* Percentage scoring
-
----
-
-## Quiz History
-
-Track previous quiz attempts.
-
-Features:
-
-* Save completed quizzes
-* View quiz history
-* Expandable history cards
-* Review previous answers
-* View score and percentage
-* User-specific quiz history
-
----
-
-## Dashboard
-
-Single-page application dashboard with:
-
-* Notes page
-* Quiz page
-* Quiz history page
-* Profile page
-* Sidebar navigation
-
----
-
-# Tech Stack
-
-## Frontend
-
-* React
-* Vite
-* React Router DOM
-* CSS3
-* Component-based architecture
-
-## Backend
-
-* Node.js
-* Express.js
-* JWT Authentication
-* bcrypt
-
-## Database
-
-* SQLite
-
-Tables:
-
-* users
-* notes
-* quiz_history
-* quiz_answers
-
-## AI Integration
-
-* OpenRouter API
-* GPT-powered quiz generation
-
-Current model:
-
-* openai/gpt-3.5-turbo
-
----
-
-# Project Structure
-
-```txt
-src/
-│
-├── components/
-│   ├── Sidebar.jsx
-│   ├── AddNote.jsx
-│   ├── NotesList.jsx
-│   ├── Filters.jsx
-│   ├── Quiz.jsx
-│   ├── QuizQuestion.jsx
-│   ├── QuizResult.jsx
-│   ├── QuizFilters.jsx
-│   ├── QuizNotesPreview.jsx
-│   └── ProtectedRoute.jsx
-│
-├── pages/
-│   ├── Dashboard.jsx
-│   ├── NotesPage.jsx
-│   ├── QuizPage.jsx
-│   ├── QuizHistoryPage.jsx
-│   ├── ProfilePage.jsx
-│   ├── Login.jsx
-│   └── Register.jsx
-│
-├── services/
-│   └── quizService.js
-│
-├── utils/
-│   └── quizUtils.js
-│
-├── App.jsx
-├── main.jsx
-└── index.css
-
-
+```text
 backend/
-│
-├── routes/
-│   ├── auth.js
-│   ├── notes.js
-│   ├── quiz.js
-│   └── quizHistory.js
-│
-├── database/
-│   └── db.js
-│
-├── middleware/
-│   └── authMiddleware.js
-│
-├── services/
-│   └── aiService.js
-│
-├── server.js
-├── notes.db
-├── package.json
-└── .env
+  database/
+    db.js
+  middleware/
+    adminMiddleware.js
+    authMiddleware.js
+  routes/
+    auth.js
+    gradeQuiz.js
+    notes.js
+    quiz.js
+    quizHistory.js
+    users.js
+  services/
+    aiService.js
+  server.js
+
+frontend/
+  ai-notes-app/
+    src/
+      components/
+      pages/
+      services/
+      utils/
+      App.jsx
+      main.jsx
+      index.css
 ```
 
----
+## Prerequisites
 
-# API Endpoints
+- Node.js 18 or newer
+- npm
 
-## Authentication
+## Environment variables
 
-### Register
-
-```http
-POST /auth/register
-```
-
-### Login
-
-```http
-POST /auth/login
-```
-
----
-
-## Notes
-
-### Get Notes
-
-```http
-GET /notes
-```
-
-### Add Note
-
-```http
-POST /notes
-```
-
-### Update Note
-
-```http
-PUT /notes/:id
-```
-
-### Delete Note
-
-```http
-DELETE /notes/:id
-```
-
----
-
-## Quiz
-
-### Generate Quiz
-
-```http
-POST /quiz
-```
-
----
-
-## Quiz History
-
-### Save Quiz Result
-
-```http
-POST /quiz-history
-```
-
-### Get Quiz History
-
-```http
-GET /quiz-history
-```
-
-### Get Quiz Attempt Details
-
-```http
-GET /quiz-history/:id
-```
-
----
-
-# Environment Variables
-
-Create a `.env` file inside the backend folder:
+Create a file named .env inside the backend folder with the following values:
 
 ```env
 OPENROUTER_API_KEY=your_api_key_here
-
 JWT_SECRET=your_jwt_secret_here
+PORT=3000
 ```
 
----
+## Installation and setup
 
-# Installation
-
-## Clone Repository
+### 1. Clone the repository
 
 ```bash
 git clone <your-repository-url>
+cd ai-notes-app
 ```
 
----
-
-## Frontend Setup
-
-```bash
-cd frontend
-
-npm install
-
-npm run dev
-```
-
----
-
-## Backend Setup
+### 2. Install backend dependencies
 
 ```bash
 cd backend
-
 npm install
+```
 
+### 3. Start the backend server
+
+```bash
 node server.js
 ```
 
----
+The API will run at http://localhost:3000.
 
-# Current Limitations
+### 4. Install frontend dependencies
 
-* Medium difficulty answers still use strict answer matching
-* Essay questions are not yet scored
-* AI feedback/remarks are not yet implemented
-* No quiz history pagination
-* PostgreSQL migration not yet completed
+```bash
+cd ../frontend/ai-notes-app
+npm install
+```
 
----
+### 5. Start the frontend app
 
-# Planned Improvements
+```bash
+npm run dev
+```
 
-* AI grading for medium difficulty quizzes
-* AI essay scoring
-* Personalized AI feedback and remarks
-* Quiz answer feedback
-* Quiz history detail component refactor
-* Dashboard enhancements
-* PostgreSQL migration
-* Deployment
-* AI flashcards
-* Export notes
-* Rich text editor
+Open http://localhost:5173 in your browser.
 
----
+## API overview
 
-# Learning Objectives
+### Authentication
 
-This project was built to practice:
+- POST /auth/register
+- POST /auth/login
 
-* React development
-* Component architecture
-* REST API development
-* Express.js
-* SQLite
-* Authentication with JWT
-* Password hashing
-* Protected routes
-* AI integration
-* Full-stack development
-* Database relationships
-* Async programming
-* State management
+### Notes
 
----
+- GET /notes
+- POST /notes
+- PUT /notes/:id
+- DELETE /notes/:id
 
-# Author
+### Quiz
 
-Built by Olegario Aleño III as a full-stack learning project focused on AI-powered educational tools and modern web development.
+- POST /quiz
+- POST /grade-quiz
+
+### Quiz history
+
+- GET /quiz-history
+- GET /quiz-history/:id
+
+### Admin users
+
+- GET /users
+- PUT /users/:id/role
+- DELETE /users/:id
+
+## Notes about the current build
+
+- Easy quizzes are generated as multiple-choice questions.
+- Medium and hard quiz generation depends on AI responses and may vary.
+- Admin features are available for accounts with the admin role.
+
+## Future ideas
+
+- Better AI grading for medium and hard questions
+- More detailed quiz feedback
+- Pagination for quiz history
+- Deployment and production hardening
+- Richer note editing and export options
+
+## Author
+
+Built as a full-stack learning project focused on AI-assisted study tools and modern web development.
